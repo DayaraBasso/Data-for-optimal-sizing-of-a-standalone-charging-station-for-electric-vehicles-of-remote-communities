@@ -1,0 +1,106 @@
+#DATA
+
+## Instance parameters
+## Nomenclature order
+
+
+NODES := 1 2 3 4 5 6 7 8 9 10 11 12 13 14 15; # Set of nodes
+C := 2 3 4 5 6 7 8 10 11 12 13 14 15; # Set of customers
+S := 1 2 3; # Set of scenarios
+D := 1; # Set of depots
+Q:= 9; # Set of charging stations
+
+delta:= 0.3; # Energy consumption rate per distance (kWh/km)
+phi:= 0.1; # 10% interest rate to bring values to present value
+lambda := 10; # weight to penalize time
+eta_BAT_ch:= 0.95; # Battery charging efficiency
+eta_BAT_di:= 0.95; # Battery discharging efficiency
+eta_VE_ch:= 0.95; # EV charging efficiency
+eta_VE_di:= 0.95; # EV discharging efficiency
+
+# Probability associated with each scenario s
+pi:=
+	1	 0.333
+	2	 0.333
+	3	 0.333
+;
+
+tau_max:= 17; # Maximum operating time (h)
+c_BAT:= 1500; # Cost of each battery ($)
+c_PV:= 100; # Cost of each photovoltaic panel ($)
+c_TR:= 0.2; # Cost associated with EV usage – driver expenses, route distance ($/km)
+
+# Distance matrix between nodes (km)
+d: 1		2		3		4		5		6		7		8		9		10		11		12		13  	14		15  :=
+	1 	 0.00	18.20	11.20	18.60	24.20	31.40	19.80	26.40	24.50	21.50	28.10	50.20	58.90	81.40	35.00
+    2    18.20	0.00	7.60	22.80	28.40	35.60	13.90	20.60	17.30	15.70	25.00	50.00	51.20	75.60	51.90
+    3    11.20	7.60	0.00	15.70	21.40	28.00	9.00	15.80	12.50	10.90	19.00	45.00	47.00	70.70	32.00
+    4    18.60	22.80	15.70	0.00	4.70	14.30	24.10	30.80	28.90	25.90	32.40	54.50	63.20	85.90	18.00
+    5    24.20	28.40	21.40	4.70	0.00	11.70	29.80	38.00	34.50	31.00	47.50	60.00	68.00	71.00	15.30
+    6    31.40	35.60	28.00	14.30	11.70	0.00	24.70	31.30	21.10	17.20	18.60	40.60	44.40	67.00	4.00
+    7    19.80	13.90	9.00	24.10	29.80	24.70	0.00	8.60	3.80	7.60	14.20	36.30	43.10	67.50	40.50
+    8    26.40	20.60	15.80	30.80	38.00	31.30	8.60	0.00	8.00	14.30	15.30	42.90	45.40	74.20	50.70
+    9    24.50	17.30	12.50	28.90	34.50	21.20	3.80	8.00	0.00	4.00	8.30	31.50	38.30	44.50	40.00
+    10   21.50	15.70	10.90	25.90	31.00	17.20	7.60	14.30	4.00	0.00	6.70	28.80	35.60	40.60	22.00
+    11   28.10	25.00	19.00	32.40	47.50	18.60	14.20	15.30	8.30	6.70	0.00	26.70	29.40	32.50	22.50
+    12   50.20	50.00	45.00	54.50	60.00	40.60	36.30	42.90	31.50	28.80	26.70	0.00	28.90	28.00	45.00
+    13   58.90	51.20	47.00	63.20	68.00	44.40	43.10	45.40	38.30	35.60	29.40	28.90	0.00	11.00	48.40
+    14   81.40	75.60	70.70	85.90	71.00	67.00	67.50	74.20	44.50	40.60	32.50	28.00	11.00	0.00	57.50
+    15   35.00	51.90	32.00	18.00	15.30	4.00	40.50	50.70	40.00	22.00	22.50	45.00	48.40	57.50	0.00
+ ;
+
+E_BAT_max := 5; # Maximum energy of each battery (kWh)
+E_BAT_min := 0; # Minimum energy of each battery (kWh)
+
+# Solar irradiation profiles (scenarios)
+G:    1       2         3 :=
+	1	   0.00   0.0000   0.0000
+    2      0.00   0.0000   0.0000
+    3      0.00   0.0000   0.0000
+    4      0.00   0.0000   0.0000
+    5      0.00   0.0000   0.0000
+    6      0.04   0.0067   0.0037
+    7      0.18   0.0529   0.0251
+    8      0.37   0.1754   0.1134
+    9      0.55   0.2348   0.2133
+    10     0.71   0.2730   0.0719
+    11     0.84   0.3926   0.0909
+    12     0.94   0.3966   0.0946
+    13     0.99   0.5400   0.0669
+    14     0.99   0.5820   0.1214
+    15     0.95   0.6627   0.2144
+    16     0.83   0.4575   0.1745
+    17     0.54   0.3937   0.0989
+    18     0.38   0.2062   0.1393
+    19     0.09   0.0935   0.0505
+    20     0.00   0.0000   0.0000
+    21     0.00   0.0000   0.0000
+    22     0.00   0.0000   0.0000
+    23     0.00   0.0000   0.0000
+    24     0.00   0.0000   0.0000
+;
+
+I_mppt:= 17.3;  # Current at maximum power point (A)
+I_sc:= 18.32;  # Short-circuit current (A)
+K_i:= 0.04; # Temperature coefficient for current
+K_v:= -0.25; # Temperature coefficient for voltage
+N_days:= 252; # Working days per year (days)
+N_oct:= 44; # Nominal panel temperature (ºC)
+N_years:= 10; # EV battery lifetime (years)
+P_BAT_max:= 5; # Maximum power of each battery (kW)
+P_EV_max:= 20; # Maximum EV charging power (kW)
+SOC_EV_0:= 60; # Initial/nominal EV SOC (kWh)
+SOC_EV_max:= 60; # Maximum EV SOC (kWh)
+SOC_EV_min:= 10; # Minimum EV SOC (kWh)
+T_a:= 25; # Ambient temperature (ºC)
+t_dep:= 8; # Departure time from the depot (h)
+v:= 40; # Constant operating speed of the EV (km/h)
+V_mppt:= 34.7; # Voltage at maximum power point (V)
+V_oc:= 41.6;  # Open-circuit voltage (V)
+
+
+
+
+
+
+
